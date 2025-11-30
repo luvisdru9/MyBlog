@@ -7,7 +7,7 @@ title: Li's Blog
 subtitle: ''
 description: 'Do not go gentle into that good night.'
 keywords:
-author: Li Ziming
+author: luvisdru9
 language: zh-CN
 timezone: Asia/Guangzhou
 
@@ -18,7 +18,7 @@ url: https://luvisdru9.github.io
 deploy:
   type: git
   repo: git@github.com:luvisdru9/luvisdru9.github.io.git
-  branch: main
+  branch: master
   
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -104,7 +104,5 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: butterfly
 
-# Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
-#deploy:
-#  type: ''
+
+

@@ -11,21 +11,23 @@
 
 nav:
   # Navigation bar logo image
-  logo:
   display_title: true
   display_post_title: true
   # Whether to fix navigation bar
   fixed: false
 
 menu:
-  # Home: / || fas fa-home
-  # List||fas fa-list:
-  #   Music: /music/ || fas fa-music
-  #   Movie: /movies/ || fas fa-video
+首頁: / || fas fa-home
+時間軸: /archives/ || fas fa-archive
+標籤: /tags/ || fas fa-tags
+分類: /categories/ || fas fa-folder-open
+清單||fa fa-heartbeat:
+音樂: /music/ || fas fa-music
+照片: /Gallery/ || fas fa-images
+電影: /movies/ || fas fa-video
+友鏈: /link/ || fas fa-link
+關於: /about/ || fas fa-heart
 
-# --------------------------------------
-# Code Blocks Settings
-# --------------------------------------
 
 code_blocks:
   # Code block theme: darker / pale night / light / ocean / false
@@ -56,7 +58,7 @@ social:
 favicon: /img/favicon.png
 
 avatar:
-  img: /img/butterfly-icon.png
+  img: /img/167297078.jpg
   effect: false
 
 # Disable all banner images
