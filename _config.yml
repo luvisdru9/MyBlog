@@ -9,7 +9,7 @@ description: 'Do not go gentle into that good night.'
 keywords:
 author: luvisdru9
 language: zh-CN
-timezone: Asia/Beijing
+timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -46,7 +46,7 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 syntax_highlighter: highlight.js
