@@ -8,7 +8,7 @@ tags:
   - LLM
   - DL
   - ML
-categories: LLM
+categories: NLP
 description: GTE论文阅读笔记
 keywords:
   - NLP

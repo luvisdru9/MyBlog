@@ -8,7 +8,7 @@ tags:
   - LLM
   - DL
   - ML
-categories: LLM
+categories: NLP
 description: Sentence Bert论文阅读笔记
 keywords:
   - NLP

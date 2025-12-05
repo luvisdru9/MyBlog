@@ -8,7 +8,7 @@ tags:
   - LLM
   - DL
   - ML
-categories: LLM
+categories: NLP
 description: Bert论文阅读笔记
 keywords:
   - NLP
@@ -41,7 +41,7 @@ cover: img_2.png
 Bert的embedding由三个部分组成：``Token Embeddings``+``Segment Embeddings``+``Position Embeddings``：
 - Token Embeddings：将句子划分为token后进行embedding
 - Segement Embeddings：使用数字对token所属句子进行标记，而后进行embedding
-- Position Embeddings：按照token的顺序分配位置id**（此处与transformer不一样）**，而后进行embedding
+- Position Embeddings：按照token的顺序分配位置id（此处与transformer不一样），而后进行embedding
 - 三者相加作为Bert的input
 - [seq]和[cls]
 	- ``sep``token代表着句子之间的分割，为预训练中的NSP任务服务（但是个人理解实际上segment embedding和position embedding和该token没有任何关系，训练上就是当成了普通的token进行训练）
