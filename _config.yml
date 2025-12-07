@@ -15,6 +15,10 @@ timezone: Asia/Shanghai
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://luvisdru9.github.io
 
+markdown:
+  plugins:
+    - '@renbaoshuo/markdown-it-katex'
+
 deploy:
   type: git
   repo: git@github.com:luvisdru9/luvisdru9.github.io.git
@@ -98,6 +102,7 @@ pagination_dir: page
 include:
 exclude:
 ignore:
+
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
