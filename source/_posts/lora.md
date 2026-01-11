@@ -61,7 +61,7 @@ cover: img.png
 
 于是作者提出了如下假设："在模型适配微调的过程中，“权重的变化”这个事情本身同样也具有低秩结构"，即权重具有“内部秩”（intrinsic rank），换句话说，模型的更新总是集中在那么几个方向上。
 
-根据上述假设，作者提出了LoRA（Low-Rank Adaptation），在微调时冻结预训练模型的权重，将权重的更新部分建模为可训练的低秩分解矩阵（如下图所示），数学表达为：$W' = W + \Delta W$，此处的待训练的低秩分解矩阵即$\Delta W$。即给定一个下游数据集$Z=\{(x_i, y_i)\}_{i=1}^N$，从原来的全参数微调目标：$\max_{\theta} \sum_{(x, y) \in Z}\sum_{t=1}^{|y|}\log P_{\Theta}(y_t \mid x, y_{<t})\tag{1}$变为LoRA的微调目标：$\max_{\theta} \sum_{(x, y) \in Z}\sum_{t=1}^{|y|}\log P_{\Theta_0 + \Delta \Theta(\theta)}(y_t \mid x, y_{<t})\tag{2}$。
+根据上述假设，作者提出了LoRA（Low-Rank Adaptation），在微调时冻结预训练模型的权重，将权重的更新部分建模为可训练的低秩分解矩阵（如下图所示），数学表达为：$W' = W + \Delta W$，此处的待训练的低秩分解矩阵即$\Delta W$。即给定一个下游数据集$Z=\{(x_i, y_i)\}_{i=1}^N$，从原来的全参数微调目标：$ \max_{\theta} \sum_{(x, y) \in Z} \sum_{t=1}^{|y|} \log P_{\Theta}(y_t \mid x, y_{<t})$变为LoRA的微调目标：$\max_{\theta} \sum_{(x, y) \in Z} \sum_{t=1}^{|y|} \log P_{\Theta_0 + \Delta \Theta(\theta)}(y_t \mid x, y_{<t})$。
 
     
 <div align="center">
@@ -70,7 +70,7 @@ cover: img.png
 
 对于权重$W_0 \in \mathbb{R}^{d \times k}$，前文提到提到对该权重的更新部分进行低秩分解：$\Delta W = BA$，其中$B \in \mathbb{R}^{d \times r}$、$A \in \mathbb{R}^{r \times k}$，$r \ll min(d, k)$。在初始化时，将$A$初始化为高斯随机噪声，$B$初始化为全零矩阵，即初始时刻$\Delta W = 0$，那么在前向传播中就有：
 
-$h = W_0 x + \Delta W x = W_0 x + B A x \tag{3}$
+$h = W_0 x + \Delta W x = W_0 x + B A x$
 
 <br>
 <br>
@@ -133,7 +133,7 @@ $h = W_0 x + \Delta W x = W_0 x + B A x \tag{3}$
 
 对于上述这类问题，我们可以使用Grassmann距离进行衡量，可以计算为：
 
-$$\Phi(A_{r=8}, A_{r=64}, i, j)=\frac{||U_{A_{r=8}}^{iT}U_{A_{r=64}}^{j}||^2_F}{min(i,j)} \in [0, 1] \tag{4}$$
+$$\Phi(A_{r=8}, A_{r=64}, i, j)=\frac{||U_{A_{r=8}}^{iT}U_{A_{r=64}}^{j}||^2_F}{min(i,j)} \in [0, 1]$$
 
 该距离取值范围为0到1，0表示彻底独立的两个子空间，1表示完全重叠的两个子空间，实验结果如下图所示，其中右边图3图4为左边图1图2左下角的放大。
 
@@ -151,7 +151,7 @@ $$\Phi(A_{r=8}, A_{r=64}, i, j)=\frac{||U_{A_{r=8}}^{iT}U_{A_{r=64}}^{j}||^2_F}{
 
 为了验证上述关于内部秩的结论，文中在相同的预训练模型上，用两个不同随机种子进行$r=64$的LoRA，然后对比两次训练学到的$A_{r=64}$的子空间相似度，如果两个训练结果的子空间相似度很高，说明模型确实倾向学习到相同的低秩结构（而不是噪声），也就是计算：
 
-$$S(A_{r=64}^{(Seed1)},A_{r=64}^{(Seed2)}) \tag{5}$$
+$$S(A_{r=64}^{(Seed1)},A_{r=64}^{(Seed2)})$$
 
 实验结果如下图所示，结果显示，$\Delta W_q$的内部秩比$\Delta W_v$的内部秩更高，且相似度更高，这说明了两个现象：
 
@@ -172,7 +172,7 @@ $$S(A_{r=64}^{(Seed1)},A_{r=64}^{(Seed2)}) \tag{5}$$
 
 文中利用SVD的角度对这个问题进行了分析，首先，对$\Delta W$进行奇异值分解：$\Delta W = U \Sigma V^T$，而后将$W$投影到$\Delta W$的$r$维空间中：$U^TWV^T$，随后我们比较$\Delta W$和$U^TWV^T$的Frobenius 范数（计算方式：对于一个矩阵$A = [a_{ij}] \in \mathbb{R}^{m \times n}$，其Frobenius 范数计算为$||A||_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n}  a_{ij}^2}$）。
 
-这样做的理由是什么呢？我们假设矩阵$A和$$B$两者主方向完全重合，有：$A = \alpha \cdot B$，那么我们也先对$B$进行SVD，按上述公式求两者的范数比值则为：$\frac{|| U^T A V^T ||_F}{||B||_F}$，由于正交矩阵不影响范数的大小，所以可以推导得到：$\frac{|| U^T A V^T ||_F}{||B||_F} = \frac{|| U^T (\alpha \cdot B) V^T ||_F}{||B||_F} = |\alpha| \tag{6}$。
+这样做的理由是什么呢？我们假设矩阵$A和$$B$两者主方向完全重合，有：$A = \alpha \cdot B$，那么我们也先对$B$进行SVD，按上述公式求两者的范数比值则为：$\frac{|| U^T A V^T ||_F}{||B||_F}$，由于正交矩阵不影响范数的大小，所以可以推导得到：$\frac{|| U^T A V^T ||_F}{||B||_F} = \frac{|| U^T (\alpha \cdot B) V^T ||_F}{||B||_F} = |\alpha|$。
 
 可见如果两个矩阵的主方向重合时，根据上述公式得到的为一个大于0的值$\alpha$，这个值反映了如果$A$中有主方向与$B$中主方向重合时，$A$在幅度上对其的放大程度是多少。而如果假设$A$和$B$方向毫无关联，接近正交，那么此时$U^T A V^T \approx 0$，导致比值为0。也就是说，我们可以通过这个比值的大小来判断两个矩阵是否主方向关联。
 

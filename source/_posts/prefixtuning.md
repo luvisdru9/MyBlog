@@ -84,7 +84,7 @@ Prefix-tuning的思想则是：与其费力寻找离散的词，不如直接优�
 
 将最终需要加上去的若干个Prefix向量表示为一个矩阵：$P_{\theta}$，所有需要训练的参数即为$\theta$，这个矩阵可能会非常大。作者发现，如果我们将梯度用于直接训练这个向量矩阵$P_{\theta}$会很不稳定并导致性能有小幅度地下降，因为这种直接优化$P_{\theta}$的形式，对于初始化和学习率设置都非常敏感。
 
-于是文中使用了一种重参数化的技巧，假设$P_{\theta}$维度为$n \times d$，那么每一个Prefix向量$P_{\theta}[i,:]$维度则为$1 \times d$。而后引入一个更低维的向量$P'_{\theta}[i,:]$，其维度为$1 \times d', d' \lt d$，再引入一个较大前馈网络$MLP_{\theta}$，最后我们可以由：$P_{\theta}[i,:] = MLP_{\theta}(P'_{\theta}[i,:])$得到我们需要的$P_{\theta}$，在训练时，P'_{\theta}和$MLP_{\theta}$都需要进行更新，训练结束后，我们只需要拿到最后的结果$P_{\theta}$即可。
+于是文中使用了一种重参数化的技巧，假设$P_{\theta}$维度为$n \times d$，那么每一个Prefix向量$P_{\theta}[i,:]$维度则为$1 \times d$。而后引入一个更低维的向量$P'_{\theta}[i,:]$，其维度为$1 \times d', d' \lt d$，再引入一个较大前馈网络$MLP_{\theta}$，最后我们可以由：$P_{\theta}[i,:] = MLP_{\theta}(P'_{\theta}[i,:])$得到我们需要的$P_{\theta}$，在训练时，$P'_{\theta}$和$MLP_{\theta}$都需要进行更新，训练结束后，我们只需要拿到最后的结果$P_{\theta}$即可。
 
 作者也在文中阐述了这样做的合理性：Aghajanyan等人在2020年发表的著作[《Intrinsic dimensionality explains the effectiveness of language model fine-tuning》](https://arxiv.org/abs/2012.13255)中写道，模型参数存在几个主要的内在方向（Intrinsic Dimension），在这些方向上进行低维训练也能达到与全量微调几乎一致的效果，作者将这种观念迁移到了$P_{\theta}$的学习上。
 
