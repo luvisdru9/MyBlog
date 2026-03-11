@@ -7,7 +7,7 @@ tags:
   - RL
   - DL
   - ML
-categories: NLP
+categories: RL
 description: Policy Gradient
 keywords:
   - RL
@@ -101,10 +101,10 @@ $$\bar{R}_{\theta} = \sum_{\tau} R(\tau) p_{\theta}(\tau) = E_{\tau \sim p_{\the
 
 进一步推导，可以得到：
 
-$$ = \sum_{\tau} R(\tau) p_{\theta}(\tau) \nabla \log p_{\theta}(\tau)$$
+$$\nabla \bar{R}_{\theta} = \sum_{\tau} R(\tau) p_{\theta}(\tau) \nabla \log p_{\theta}(\tau)$$
 
 实际训练中，一般都是根据训练样本进行期望计算，例如训练样本中，因此可以继续推导为：
-$$ = E_{\tau \sim p_{\theta}(\tau)} [R(\tau) \nabla \log p_{\theta}(\tau)] \approx \frac{1}{N} \sum_{n=1}^{N} R(\tau^n) \nabla \log p_{\theta}(\tau^n)$$
+$$\nabla \bar{R}_{\theta} = E_{\tau \sim p_{\theta}(\tau)} [R(\tau) \nabla \log p_{\theta}(\tau)] \approx \frac{1}{N} \sum_{n=1}^{N} R(\tau^n) \nabla \log p_{\theta}(\tau^n)$$
 $$ = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} R(\tau^n) \nabla \log p_{\theta}(a_t^n | s_t^n)$$
 
 其中，Trajectory $\tau^n$是训练样本中的第$n$条Trajectory，Policy$\theta$的大致更新流程如下图所示：
@@ -151,7 +151,7 @@ $$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} R(\tau^n
 
 $$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} (R(\tau^n) - b) \nabla \log p_{\theta}(a_t^n | s_t^n)$$
 
-这样即使是$R(\tau)$全部为正值的情况下，如果$R(\tau)$没有满足$b$的门槛，$R(\tau^n) - b$为负，证明这个action还不够好，将其概率降低，为其他好action的采样“让出道路”。
+其中一个做法是令$b \approx E[R(\tau)]$。这样即使是$R(\tau)$全部为正值的情况下，如果$R(\tau)$没有满足$b$的门槛，$R(\tau^n) - b$为负，证明这个action还不够好，将其概率降低，为其他好action的采样“让出道路”。
 
 <br>
 
@@ -161,4 +161,34 @@ $$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} (R(\tau^
 
 $$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} (R(\tau^n) - b) \nabla \log p_{\theta}(a_t^n | s_t^n)$$
 
-我们可以看到，在某一个$s^n_t$给出一个$a^n_t$这个行为是被$R(\tau^n) - b$加权的，也就是说处于一个Trajectory中的数据都是被同一个值加权的，
+我们可以看到，在某一个$s^n_t$给出一个$a^n_t$这个行为是被$R(\tau^n) - b$加权的，也就是说处于一个Trajectory中的数据都是被同一个值加权的，例如如下图所示：
+
+<div align="center">
+    <img src="img_7.png"/>
+</div>
+
+比如左半边的图中，$(s_b, a_2)$和$(s_c, a_3)$明明没有对整个Trajectory的奖励$R(\tau)$作出什么正向激励，但是却也被赋上了和$(s_a,a_1)$同样的权重，这似乎并不利于模型去学习到真正好的行为。
+
+如何解决呢？我们加权时只考虑**从这一个action执行后所得到的总reward**，如下图所示：
+
+<div align="center">
+    <img src="img_8.png"/>
+</div>
+
+那么具体可以修改如下：
+
+- original：$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} (R(\tau^n) - b) \nabla \log p_{\theta}(a_t^n | s_t^n)$
+
+- assign suitable credit：$\nabla \bar{R}_{\theta} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=1}^{T_n} (\sum_{t'=t}^{T^n}r_{t'}^n - b) \nabla \log p_{\theta}(a_t^n | s_t^n)$
+
+即将$R(\tau)$替换为$\sum_{t'=t}^{T^n}r_{t'}^n$。更进一步，我们可以针对$\sum_{t'=t}^{T^n}r_{t'}^n$这一项进行进一步优化，为未来的reward引入一个折扣因子，比如$\sum_{t'=t}^{T^n} \gamma^{t'-t}r_{t'}^n, \gamma \lt 1$，因为比如在$t=2$采取的action虽然会对后面的行为产生影响，但是这种效应距离了一定时间后也会有一定消减，所以用这个折扣因子$\gamma$对其进行discount。
+
+最后，我们将$\sum_{t'=t}^{T^n} \gamma^{t'-t}r_{t'}^n - b$称为$A^{\theta}(s_t, a_t)$，称之为优势函数(Advantage Function)，用于衡量“在状态$s_t$采取某个$a_t$比采取其他action好多少”。
+
+<br>
+<br>
+<br>
+
+## 参考资料
+
+- https://speech.ee.ntu.edu.tw/~tlkagk/courses_MLDS18.html
