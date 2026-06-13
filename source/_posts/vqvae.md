@@ -69,7 +69,7 @@ VQ-VAE采用了一种新的训练方式，后验分布和先验分布都是categ
 ### Discrete Latent variables
 
 <div align=center>
-	<img src="img1.png"/>
+	<img src="img_1.png"/>
 </div>
 
 VQ-VAE定义了一个潜在嵌入空间(这里我们又称为字典)$e \in R^{K \times D}$，其中 $K$ 是离散潜变量空间的大小（即 $K$ 维分类），$D$ 是每个潜变量嵌入向量 $e_i$ 的维度。模型接收输入 $x$，通过编码器产生连续输出 $z_e(x)$。然后，通过在共享的嵌入空间 $e$ 中进行最近邻查找（如公式 1 所示）来计算离散潜变量 $z$。解码器的输入就是对应的嵌入向量 $e_k$（如公式 2 所示）。
