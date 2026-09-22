@@ -13,16 +13,17 @@ timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://luvisdru9.github.io
+url: https://luvisdru9.github.io/MyBlog/
+root: /MyBlog/
 
 markdown:
   plugins:
     - '@renbaoshuo/markdown-it-katex'
 
-deploy:
-  type: git
-  repo: git@github.com:luvisdru9/luvisdru9.github.io.git
-  branch: master
+# deploy:
+#   type: git
+#   repo: git@github.com:luvisdru9/luvisdru9.github.io.git
+#   branch: master
   
 permalink: :year/:month/:day/:title/
 permalink_defaults:
